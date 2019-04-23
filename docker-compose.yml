@@ -1,0 +1,115 @@
+version: "2"
+services:
+  flowable-idm-db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: flowable
+    expose:
+      - "5432"
+
+  flowableidm:
+    image: flowable/flowable-idm
+    ports:
+     - "9090:9090"
+    environment:
+      SERVER_PORT: 9090
+      SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flowable-idm-db:5432/flowable
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      FLOWABLE_REST_APP_ADMIN_USER-ID: rest-admin
+      FLOWABLE_REST_APP_ADMIN_PASSWORD: test
+      FLOWABLE_REST_APP_ADMIN_FIRST-NAME: Rest
+      FLOWABLE_REST_APP_ADMIN_LAST-NAME: Admin
+    expose: 
+      - "9090"
+    links:
+      - flowable-idm-db
+  
+  flowabletask:
+    image: flowable/flowable-task
+    ports: 
+      - "9080:9080"
+    environment:
+      SERVER_PORT: 9080
+      FLOWABLE_COMMON_APP_IDM-URL: http://flowableidm:9090/flowable-idm
+      FLOWABLE_COMMON_APP_IDM-ADMIN_USER: admin
+      FLOWABLE_COMMON_APP_IDM-ADMIN_PASSWORD: test
+      FLOWABLE_COMMON_APP_IDM-REDIRECT-URL: http://flowableidm:9090/flowable-idm
+      SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flowable-idm-db:5432/flowable
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+    expose: 
+      - "9080"
+    links:
+      - flowableidm
+      - flowable-idm-db
+
+  flowablemodeler:
+    image: flowable/flowable-modeler
+    ports:
+      - "9070:9070"
+    environment:
+      SERVER_PORT: 9070
+      FLOWABLE_COMMON_APP_IDM-URL: http://flowableidm:9090/flowable-idm
+      FLOWABLE_COMMON_APP_IDM-ADMIN_USER: admin
+      FLOWABLE_COMMON_APP_IDM-ADMIN_PASSWORD: test
+      FLOWABLE_COMMON_APP_IDM-REDIRECT-URL: http://flowableidm:9070/flowable-idm
+      FLOWABLE_MODELER_APP_DEPLOYMENT-API-URL: http://flowabletask:9080/flowable-task/app-api
+      SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flowable-idm-db:5432/flowable
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+    expose: 
+      - "9070"
+    links:
+      - flowableidm
+      - flowabletask
+      - flowable-idm-db
+  
+  flowaberest:
+    image: flowable/flowable-rest
+    ports:
+      - "9060:9060"
+    environment:
+      SERVER_PORT: 9060
+      SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flowable-idm-db:5432/flowable
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      FLOWABLE_REST_APP_ADMIN_USER-ID: rest-admin
+      FLOWABLE_REST_APP_ADMIN_PASSWORD: test
+      FLOWABLE_REST_APP_ADMIN_FIRST-NAME: Rest
+      FLOWABLE_REST_APP_ADMIN_LAST-NAME: Admin
+    expose: 
+      - "9060"
+    links:
+       - flowable-idm-db
+
+  flowabeadmin:
+    image: flowable/flowable-admin
+    ports:
+      - "9050:9050"
+    environment:
+      SERVER_PORT: 9050
+      FLOWABLE_COMMON_APP_IDM-URL: http://flowableidm:9090/flowable-idm
+      FLOWABLE_COMMON_APP_IDM-ADMIN_USER: admin
+      FLOWABLE_COMMON_APP_IDM-ADMIN_PASSWORD: test
+      FLOWABLE_COMMON_APP_IDM-REDIRECT-URL: http://flowableidm:9090/flowable-idm
+      SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flowable-idm-db:5432/flowable
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      FLOWABLE_REST_APP_ADMIN_USER-ID: rest-admin
+      FLOWABLE_REST_APP_ADMIN_PASSWORD: test
+    expose: 
+      - "9050"
+    links:
+      - flowableidm
+      - flowable-idm-db       
+               

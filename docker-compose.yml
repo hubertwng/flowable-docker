@@ -107,7 +107,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: 123456
       FLOWABLE_REST_APP_ADMIN_USER-ID: rest-admin
       FLOWABLE_REST_APP_ADMIN_PASSWORD: test
-      FLOWABLE_ADMIN_APP_SERVER-CONFIG_PROCESS_SERVER-ADDRESS: http://flowabletask:9050/flowable-task
     expose: 
       - "9050"
     links:
